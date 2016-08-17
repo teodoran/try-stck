@@ -46,11 +46,15 @@
 			},
 			welcome: 'Welcome to <strong>STCK</strong> 1.1, a stack-based programming language in the browser',
 			commandHandler: function (input, state) {
-				if (input === "hprint") {
+				if (input === 'help') {
+					window.open('https://github.com/teodoran/stck/blob/master/README.md#using-the-languague','_blank');
+					return ''
+				}
+				if (input === 'hprint') {
 					return hprint(heapStack);
 				}
 
-				if (input === "sprint") {
+				if (input === 'sprint') {
 					return sprint(heapStack);
 				}
 

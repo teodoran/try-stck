@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!--
+		Code is borrowed and modified from WebREPL by Torbjørn Marø
+		Huge thanks to him!
+		https://github.com/tormaroe/webrepl
+		http://blog.kjempekjekt.com/2013/02/22/webrepl-en-javascript-basert-kommandolinje/
+	-->
+	<title>Try STCK</title>
+	<link rel="stylesheet" type="text/css" href="webrepl.css">
+
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js" type="text/javascript" language="javascript"></script>
+	<script type='text/javascript' src='node_modules/fable-core/fable-core.min.js'></script>
+    <script type='text/javascript' src='stck.js'></script>
+	<script type="text/javascript" src="webrepl.js"></script>
+	
+	<!--<div><img src="logo.png"></div>-->
+	
+	<div id="container" style="margin-left:20px;"></div>
+
+	<script type="text/javascript">
+	$(document).ready(function () {
+		var heapStack = stck.startHeapAndStack();
+
+		var displayList = function (list) {
+			return '<dt style="color:yellow;">' + list.ToString() + "</dt>"
+		};
+
+		var displayError = function (err) {
+			return '<dt style="color:red;">' + err + "</dt>"
+		};
+
+		var sprint = function (heapStack) {
+			return displayList(heapStack[1]);
+		};
+
+		var hprint = function (heapStack) {
+			return displayList(heapStack[0]);
+		};
+
+		var terminal = webrepl.make({ 
+			container: $('#container'),
+			prompt: '$&gt; ',
+			state: { 
+				memory: {} 
+			},
+			welcome: 'Welcome to <strong>STCK</strong> 1.1, a stack-based programming language in the browser',
+			commandHandler: function (input, state) {
+				if (input === "hprint") {
+					return hprint(heapStack);
+				}
+
+				if (input === "sprint") {
+					return sprint(heapStack);
+				}
+
+				heapStack = stck.evalPrint(heapStack[0], heapStack[1], input);
+
+				if (stck.error) {
+					var e = stck.error;
+					stck.error = null;
+					return displayError(e);
+				} else {
+					return sprint(heapStack);
+				}
+			}
+		});
+	});
+	</script>
+</html>

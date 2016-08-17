@@ -1,0 +1,7 @@
+# fsharp compiled files
+interpreter/bin/
+interpreter/obj/
+interpreter/stck.js
+
+# npm
+node_modules/

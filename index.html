@@ -22,20 +22,23 @@
 	$(document).ready(function () {
 		var heapStack = stck.startHeapAndStack();
 
-		var displayList = function (list) {
-			return '<dt style="color:yellow;">' + list.ToString() + "</dt>"
-		};
-
 		var displayError = function (err) {
 			return '<dt style="color:red;">' + err + "</dt>"
 		};
 
-		var sprint = function (heapStack) {
-			return displayList(heapStack[1]);
+		var sprint = function (stack) {
+			return '<dt style="color:yellow;">' + stack[1].ToString() + "</dt>"
 		};
 
-		var hprint = function (heapStack) {
-			return displayList(heapStack[0]);
+		var displayHeapElement = function (element) {
+			return '<dt style="color:yellow;">' + element[0] + ' -> ' + element[1].ToString() + "</dt>"
+		};
+
+		var hprint = function (heap) {
+			if (!heap.head) {
+				return "";
+			}
+			return displayHeapElement(heap.head) + hprint(heap.tail);
 		};
 
 		var terminal = webrepl.make({ 
@@ -51,9 +54,8 @@
 					return ''
 				}
 				if (input === 'hprint') {
-					return hprint(heapStack);
+					return hprint(heapStack[0]);
 				}
-
 				if (input === 'sprint') {
 					return sprint(heapStack);
 				}

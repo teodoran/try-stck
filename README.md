@@ -12,8 +12,8 @@ Installation
 You'll need:
 * [Node](https://nodejs.org/en/download/package-manager/) (v4.4 or higher)
 
-	npm install
-	npm start
+    npm install
+    npm start
 
 
 Build interpreter from source
@@ -26,7 +26,7 @@ This step is optional, and is only needed if you want to update the F# implement
 
 On Ubuntu:
 
-	chmod +x build.sh
-	./build.sh
+    chmod +x build.sh
+    ./build.sh
 
 On other plattforms you're on your own :-)

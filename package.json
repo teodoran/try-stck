@@ -21,6 +21,7 @@
   "homepage": "https://github.com/teodoran/try-stck#readme",
   "dependencies": {
     "express": "^4.14.0",
-    "fable-core": "^0.5.4"
+    "fable-core": "^0.5.4",
+    "mousetrap": "^1.6.0"
   }
 }

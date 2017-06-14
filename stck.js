@@ -47,7 +47,19 @@
   exports.evalPrint = evalPrint;
   exports.startHeapAndStack = startHeapAndStack;
 
-  var standard_library = exports.standard_library = _fableCore.List.ofArray([["2dup", _fableCore.List.ofArray(["over", "over"])], ["rem", _fableCore.List.ofArray(["dup", "rot", "swap", "2dup", "i/", "*", "-", "1000000", "*", "swap", "i/"])], ["/", _fableCore.List.ofArray(["2dup", "i/", "rot", "rot", "rem"])], ["empty", _fableCore.List.ofArray(["len", "0", "="])], ["clear", _fableCore.List.ofArray(["empty", "?", ":", ".", "clear", ";"])], ["max", _fableCore.List.ofArray(["len", "1", "=", "not", "?", "2dup", ">", "?", "swap", ".", ":", ".", ";", "max", ":", ";"])], ["min", _fableCore.List.ofArray(["len", "1", "=", "not", "?", "2dup", "<", "?", "swap", ".", ":", ".", ";", "min", ":", ";"])]]);
+  var standard_library = exports.standard_library = _fableCore.List.ofArray([
+    ["2dup", _fableCore.List.ofArray(["over", "over"])],
+    ["rem", _fableCore.List.ofArray(["dup", "rot", "swap", "2dup", "i/", "*", "-", "1000000", "*", "swap", "i/"])],
+    ["/", _fableCore.List.ofArray(["2dup", "i/", "rot", "rot", "rem"])],
+    ["empty", _fableCore.List.ofArray(["len", "0", "="])],
+    ["clear", _fableCore.List.ofArray(["empty", "?", ":", ".", "clear", ";"])],
+    ["max", _fableCore.List.ofArray(["len", "1", "=", "not", "?", "2dup", ">", "?", "swap", ".", ":", ".", ";", "max", ":", ";"])],
+    ["min", _fableCore.List.ofArray(["len", "1", "=", "not", "?", "2dup", "<", "?", "swap", ".", ":", ".", ";", "min", ":", ";"])],
+    ["next-fib", _fableCore.List.ofArray(["2dup", "+"])],
+    ["is-even", _fableCore.List.ofArray(["dup", "2", "%", "0", "="])],
+    ["next-is-zero", _fableCore.List.ofArray(["dup", "0", "="])],
+    ["fib-under-4m", _fableCore.List.ofArray(["next-fib", "dup", "4000000", ">", "?", "fib-under-4m", ":", ".", ";"])],
+    ["sum-if-even", _fableCore.List.ofArray(["swap", "is-even", "?", "+", ":", ".", ";", "swap", "next-is-zero", "?", ".", ":", "swap", "sum-if-even", ";"])]]);
 
   var error = exports.error = null;
 

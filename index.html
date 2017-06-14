@@ -14,30 +14,29 @@
 	<script type='text/javascript' src='node_modules/mousetrap/mousetrap.min.js'></script>
     <script type='text/javascript' src='stck.js'></script>
 	<script type="text/javascript" src="webrepl.js"></script>
+	<script type="text/javascript" src="slides.js"></script>
 	
-	<!--<div><img src="logo.png"></div>-->
-	
-	<div id="container" style="margin-left:20px;"></div>
+	<div id="container" style="margin-left:8px;margin-bottom:30vh;"></div>
 
 	<script type="text/javascript">
 	$(document).ready(function () {
 		var heapStack = stck.startHeapAndStack();
 
 		var displayError = function (err) {
-			return '<dt style="color:red;">' + err + "</dt>"
+			return '<dt style="color:red;">' + err + '</dt>'
 		};
 
 		var sprint = function (stack) {
-			return '<dt style="color:yellow;">' + stack[1].ToString() + "</dt>"
+			return '<dt style="color:yellow;">' + stack[1].ToString() + '</dt>'
 		};
 
 		var displayHeapElement = function (element) {
-			return '<dt style="color:yellow;">' + element[0] + ' -> ' + element[1].ToString() + "</dt>"
+			return '<dt style="color:yellow;">' + element[0] + ' -> ' + element[1].ToString() + '</dt>'
 		};
 
 		var hprint = function (heap) {
 			if (!heap.head) {
-				return "";
+				return '';
 			}
 			return displayHeapElement(heap.head) + hprint(heap.tail);
 		};
@@ -46,7 +45,8 @@
 			container: $('#container'),
 			prompt: '$&gt; ',
 			state: { 
-				memory: {} 
+				memory: {},
+				slide: -1
 			},
 			welcome: 'Welcome to <strong>STCK</strong> 1.1, a stack-based programming language in the browser',
 			commandHandler: function (input, state) {
@@ -59,6 +59,14 @@
 				}
 				if (input === 'sprint') {
 					return sprint(heapStack);
+				}
+				if (input === 'next') {
+					state.slide = state.slide + 1;
+					return slides[Math.abs(state.slide % slides.length)];
+				}
+				if (input === 'prev') {
+					state.slide = state.slide - 1;
+					return slides[Math.abs(state.slide % slides.length)];
 				}
 
 				heapStack = stck.evalPrint(heapStack[0], heapStack[1], input);

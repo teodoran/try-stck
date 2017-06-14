@@ -65,12 +65,12 @@ Agenda
 Todo
 ----
 
-* Skriv om try-stck > talk så man ikke scroller forbi 2/3 ned på siden
+* X Skriv om try-stck > talk så man ikke scroller forbi 2/3 ned på siden
 * Skaff en VGA til HDMI overgang++ (Noe så man slipper å tenke på det igjen)
 * Bygg inn støtte for slides i try-stck > talk
-    * Vise frem ASCII-slides?
-    * Bilder?
-    * STCK-eksempler som kan kjøre?
+    * X Vise frem ASCII-slides? (12X16?)
+    * X Bilder?
+    * X STCK-eksempler som kan kjøre?
 * Deploy try-stck > talk til Azure
 * Deploy hyperstck?
 * hyperlamb?

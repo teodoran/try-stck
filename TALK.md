@@ -71,7 +71,7 @@ Todo
     * X Vise frem ASCII-slides? (12X16?)
     * X Bilder?
     * X STCK-eksempler som kan kjøre?
-* Deploy try-stck > talk til Azure
+* X Deploy try-stck > talk til Azure
 * Deploy hyperstck?
 * hyperlamb?
 * Løsning for å kjøre alt lokalt? (kan være dårlig internett)

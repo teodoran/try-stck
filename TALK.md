@@ -15,12 +15,13 @@ Agenda
 
 ### Intro (5 minutter)
 
-* Disclaimers
+* Intro slide
     * Noe morsomt om at dette foredrage har tvilsom direkte anvendbarhet
+* Hva kunne han ha snakket om?
     * Noe om at jeg meldte inn tre ting, og programkomiteen valgte det minst "enterpisete"
-    * Noe om at Einar Høst har vist lingnende ting før, men nå er han borte, så da får jeg ta det
-* Hva skal jeg snakke om i dag?
+* Hva skal han snakke om?
     * Gå over agenda
+    * Noe om at Einar Høst har vist lingnende ting før, men nå er han borte, så da får jeg ta det
 
 ### Stack-baserte språk (5 minutter)
 
@@ -65,14 +66,19 @@ Agenda
 Todo
 ----
 
-* X Skriv om try-stck > talk så man ikke scroller forbi 2/3 ned på siden
+* Ferdigstille slides
 * Skaff en VGA til HDMI overgang++ (Noe så man slipper å tenke på det igjen)
-* Bygg inn støtte for slides i try-stck > talk
-    * X Vise frem ASCII-slides? (12X16?)
-    * X Bilder?
-    * X STCK-eksempler som kan kjøre?
-* X Deploy try-stck > talk til Azure
+* Deploy try-stck > talk til Azure
 * Deploy hyperstck?
 * hyperlamb?
 * Løsning for å kjøre alt lokalt? (kan være dårlig internett)
-* Marketing?
+
+Done
+----
+
+* X Skriv om try-stck > talk så man ikke scroller forbi 2/3 ned på siden
+* X Bygg inn støtte for slides i try-stck > talk
+    * X Vise frem ASCII-slides? (12X16?)
+    * X Bilder?
+    * X STCK-eksempler som kan kjøre?
+* X Marketing?

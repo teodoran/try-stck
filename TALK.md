@@ -98,13 +98,13 @@ REST kan være ekstremt fleksibelt
 Todo
 ----
 
-* Skrive notater
 * Skaff en VGA til HDMI overgang++ (Noe så man slipper å tenke på det igjen)
 
 Done
 ----
 
 * X Ferdigstille slides
+* X Skrive notater
 * X Skriv om try-stck > talk så man ikke scroller forbi 2/3 ned på siden
 * X Bygg inn støtte for slides i try-stck > talk
     * X Vise frem ASCII-slides? (12X16?)

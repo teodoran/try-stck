@@ -5,6 +5,10 @@ This is the repo for a webpage running STCK in the browser. Fable is used in ord
 
 The browser REPL-framework is borrowed from [WebREPL](https://github.com/tormaroe/webrepl) by Torbjørn Marø. Huge kudos to him! Check out his [blog-post](http://blog.kjempekjekt.com/2013/02/22/webrepl-en-javascript-basert-kommandolinje/) about WebREPL as well.
 
+Where is the talk?
+------------------
+
+Try [talk-stck.herokuapp.com](http://talk-stck.herokuapp.com/)
 
 Installation
 ------------
@@ -14,7 +18,6 @@ You'll need:
 
     npm install
     npm start
-
 
 Build interpreter from source
 -----------------------------

@@ -37,7 +37,7 @@ Stack-baserte programmeringsspråk + REST =
 |   * Litt om stack-baserte språk        |
 |   * Litt om STCK                       |
 |   * STCK + REST? Hvorfor det?          |
-|   * Profit                             |
+|                                        |
 |                                        |
 |                                        |
 +----------------------------------------+
@@ -57,9 +57,21 @@ Stack-baserte programmeringsspråk + REST =
 
 </pre>`,
 `<img style="height:15em;" src="images/moore.jpg">`,
-// hvordan funker det? Tegning
-// Hva er begrensningene?
-`<img style="height:15em;" src="images/setun.jpg">`,
+// `<img style="height:15em;" src="images/setun.jpg">`,
+`<pre style="color:yellow;">
++----------------------------------------+
+|                                        |
+|   Stack-baserte programmeringsspråk    |
+|   ---------------------------------    |
+|                                        |
+|   * Alt er postfiks                    |
+|   * Ingen skikkelige variabler         |
+|   * Hvordan funker det i praksis?      |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+</pre>`,
 `<pre style="color:yellow;">
 
 Et stack-basert programmeringsspråk  
@@ -74,15 +86,23 @@ Et stack-basert programmeringsspråk
 
 
 </pre>`,
-`<pre style="color:yellow;">Demo</pre>`,
+// Demo 1 - Hvoran funker stack-baserte språk
+// Verdier på stack 2 3, bare int32 er støttet
+// Matteoperasjoner +
+// Stack operasjoner . dup rot
+// Boolske verdier 0 og 1
+// Boolske operasjoner not =
+// Conditionals 0 ? 42 : 1337; 1 ? 42 : 1337;
+// Subrutiner # add-five 5 +
+// hprint
 `<pre style="color:yellow;">
 +----------------------------------------+
 |                                        |
-|   Project Euler problem two            |
-|   -------------------------            |
+|   Project Euler problem #2             |
+|   ------------------------             |
 |                                        |
-|   * Sum all Fibonacci numbers          |
-|   * Below four million                 |
+|   * Summer alle Fibonacci-tall         |
+|   * Under 4000000                      |
 |                                        |
 |                                        |
 |                                        |
@@ -124,7 +144,32 @@ Et stack-basert programmeringsspråk
 `<pre style="color:yellow;">
 0 1 2 fib-under-4m sum-if-even !
 </pre>`,
-// Viktig poeng #1: Postfiksete linjer med subrutiner er litt som fluent-api, pipes og |>
+`<pre style="color:yellow;">
++----------------------------------------+
+|                                        |
+|   Esoterisk, ja gjett om! men...       |
+|   ------------------------------       |
+|                                        |
+|   * Lett å embedde => Bra for DSL      |
+|   * Ingen variabler => Ingen problemer |
+|   * Begrensninger kan være en styrke!  |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+</pre>`,
+`<pre style="color:yellow;">
+names.Where(s => s.Length == 5)
+     .OrderBy(s => s)
+     .Select(s => s.ToUpper())
+</pre>`,
+`<pre style="color:yellow;">
+512 |> square |> toStr |> rev
+</pre>`,
+`<pre style="color:yellow;">
+ls | grep ".md" | rev
+</pre>`,
+
 `<pre style="color:yellow;">
     ___   _____    ___   _  __
    / __| |_   _|  / __| | |/ /
@@ -181,8 +226,23 @@ Et stack-basert programmeringsspråk
 |                                        |
 +----------------------------------------+
 </pre>`,
-`<pre style="color:yellow;">Demo</pre>`,
-// Viktig poeng #2: REST med hypermedia lar deg lage veldig uttrykksfulle API. Tenk tilstandsmaskin
+`<pre style="color:yellow;">rest-stck</pre>`,
+// Vis 1 1 + i rest-stck
+// Vis 1 1 + og define lol i hyperstck
+`<pre style="color:yellow;">
++----------------------------------------+
+|                                        |
+|   Esoterisk, ja gjett om! men...       |
+|   ------------------------------       |
+|                                        |
+|   State transfer er:                   |
+|   1) Utrolig uttrykksfullt             |
+|   2) Veldig fleksibelt                 |
+|   3) Noe noe tilstandsmaskin           |
+|                                        |
+|                                        |
++----------------------------------------+
+</pre>`,
 `<img style="height:15em;" src="images/power.gif">`,
 `<pre style="color:yellow;">
 

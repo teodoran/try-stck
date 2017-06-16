@@ -54,6 +54,10 @@
 					window.open('https://github.com/teodoran/stck/blob/master/README.md#using-the-languague','_blank');
 					return ''
 				}
+				if (input === 'rest-stck') {
+					window.open('http://stck.azurewebsites.net/stck','_blank');
+					return ''
+				}
 				if (input === 'hprint') {
 					return hprint(heapStack[0]);
 				}
@@ -62,6 +66,9 @@
 				}
 				if (input === 'next') {
 					state.slide = state.slide + 1;
+					return slides[Math.abs(state.slide % slides.length)];
+				}
+				if (input === 'this') {
 					return slides[Math.abs(state.slide % slides.length)];
 				}
 				if (input === 'prev') {

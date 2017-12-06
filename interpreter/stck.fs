@@ -1,185 +1,206 @@
-open System
-open System.IO
-open System.Text.RegularExpressions
+module Stck
 
-let standard_library = [
-    ("2dup", ["over"; "over"]);
-    ("rem", ["dup"; "rot"; "swap"; "2dup"; "i/"; "*"; "-"; "1000000"; "*"; "swap"; "i/"]);
-    ("/", ["2dup"; "i/"; "rot"; "rot"; "rem"]);
-    ("empty", ["len"; "0"; "="]);
-    ("clear", ["empty"; "?"; ":"; "."; "clear"; ";"]);
-    ("max", ["len"; "1"; "="; "not"; "?"; "2dup"; ">"; "?"; "swap"; "."; ":"; "."; ";"; "max"; ":"; ";"]);
-    ("min", ["len"; "1"; "="; "not"; "?"; "2dup"; "<"; "?"; "swap"; "."; ":"; "."; ";"; "min"; ":"; ";"])
-]
+type Word = string
 
-let mutable error = null
+type Error =
+    | StackUnderflow
+    | MissingQuotation
+    | Failure of string
 
-let printerr op = error <- sprintf "Cannot %s on the stack" op
+type StackElement =
+    | Operation of Word
+    | Exception of Error
+    | Quotation of Stack
+and Stack =
+    | Empty
+    | Stack of (StackElement * Stack)
 
-let push e stack =
-    e :: stack
+type Heap = Heap of Map<Word, Stack>
 
-let drop stack =
-    match stack with
-    | tos :: rest -> rest
-    | _ ->
-        printerr "drop"
-        stack
+type Context = (Heap * Stack)
 
-let swap stack =
-    match stack with
-    | a :: b :: rest -> b :: a :: rest
-    | _ ->
-        printerr "swap"
-        stack
+let emptyContext : Context = (Heap Map.empty, Empty)
 
-let dup stack =
-    match stack with
-    | tos :: rest -> tos :: tos :: rest
-    | _ ->
-        printerr "dup"
-        stack
+let stdlib = "stdlib.md"
 
-let over stack =
-    match stack with
-    | a :: b :: rest -> b :: a :: b :: rest
-    | _ ->
-        printerr "over"
-        stack
+let push e s = Stack (e, s)
 
-let rot stack =
-    match stack with
-    | a :: b :: c :: rest -> c :: a :: b :: rest
-    | _ ->
-        printerr "rot"
-        stack
+let drop = function
+    | Stack (_, r) -> r
+    | Empty -> push (Exception StackUnderflow) Empty
 
-let len (stack:List<int>) =
-    push stack.Length stack
+let dup = function
+    | Stack (e, t) -> Stack (e, Stack (e, t))
+    | Empty -> push (Exception StackUnderflow) Empty
 
-let isInt string = true
+let swap = function
+    | Stack (a, Stack (b, t)) -> Stack (b, Stack (a, t))
+    | s -> push (Exception StackUnderflow) s
 
-let math op stack =
-    match stack with
-    | a :: b :: rest -> push (op a b) rest
-    | _ ->
-        printerr "do math"
-        stack
+let ontop = function
+    | Stack (e, Stack (Quotation q, r)) -> Stack (Quotation (push e q), r)
+    | s -> push (Exception StackUnderflow) s
 
-let add stack = math (fun a b -> b + a) stack
+let rec tail e s =
+    match s with
+    | Empty -> Stack (e, Empty)
+    | Stack (h, t) -> Stack (h, tail e t)
 
-let substract stack = math (fun a b -> b - a) stack
+let ontail = function
+    | Stack (e, Stack (Quotation q, r)) -> Stack (Quotation (tail e q), r)
+    | s -> push (Exception StackUnderflow) s
 
-let multiply stack = math (fun a b -> b * a) stack
+let rec stail e s =
+    match s with
+    | Empty -> e
+    | Stack (h, t) -> Stack (h, stail e t)
 
-let divide stack = math (fun a b -> b / a) stack
+let concat = function
+    | Stack (Quotation q, Stack (Quotation q', r)) -> Stack (Quotation (stail q q'), r)
+    | s -> push (Exception StackUnderflow) s
 
-let modulo stack = math (fun a b -> b % a) stack
+let chop = function
+    | Stack (Quotation Empty, r) -> Stack (Quotation Empty, Stack (Quotation Empty, r))
+    | Stack (Quotation (Stack (a, t)), r) -> Stack (Quotation (Stack (a, Empty)), Stack (Quotation t, r))
+    | s -> push (Exception StackUnderflow) s
 
-let asInt b = if b then 1 else 0
+let emp = function
+    | Empty -> push (Quotation (Stack (Operation "true", Empty))) Empty
+    | s -> push (Quotation (Stack (Operation "false", Empty))) s
 
-let equal stack = math (fun a b -> asInt(a = b)) stack
+let throw = function
+    | Stack (Operation a, r) -> push (Exception (Failure a)) r
+    | s -> push (Exception StackUnderflow) s
 
-let greater stack = math (fun a b -> asInt(a > b)) stack
+let err = function
+    | Stack (Exception _, r) -> push (Quotation (Stack (Operation "true", Empty))) r
+    | Stack (_, r) -> push (Quotation (Stack (Operation "false", Empty))) r
+    | s -> push (Exception StackUnderflow) s
 
-let less stack = math (fun a b -> asInt(a < b)) stack
+let define c =
+    let Heap h, s = c
+    match s with
+    | Stack (Operation w, Stack (Quotation q, r)) -> (Heap (Map.add w q h), r)
+    | _ -> (Heap h, (push (Exception StackUnderflow) s))
 
-let not stack =
-    match stack with
-    | tos :: rest -> 
-        if (tos <> 0) then
-            0 :: rest
-        else
-            1 :: rest
-    | _ ->
-        printerr "not"
-        stack
+let rec apply s c : Context =
+    match s with
+    | Empty -> c
+    | Stack (e, r) -> apply r (exec e c)
+and exec e c =
+    let h, s = c
+    let Heap hm, _ = c
+    match e with
+    | Operation "." -> (h, drop s)
+    | Operation "dup" -> (h, dup s)
+    | Operation "swap" -> (h, swap s)
+    | Operation "<<" -> (h, ontop s)
+    | Operation ">>" -> (h, ontail s)
+    | Operation "||" -> (h, concat s)
+    | Operation "|" -> (h, chop s)
+    | Operation "emp" -> (h, emp s)
+    | Operation "throw" -> (h, throw s)
+    | Operation "err" -> (h, err s)
+    | Operation "#" -> define c
+    | Operation "app" -> app c
+    | Operation w when Map.containsKey w hm -> apply (Map.find w hm) c
+    | Exception _ -> c
+    | symbol -> (h, push symbol s)
+and app c =
+    let h, s = c
+    match s with
+    | Stack (Quotation q, r) -> apply q (h, r)
+    | _ -> (h, push (Exception MissingQuotation) s)
 
-let exec exp stack =
-    match exp with
-    | "." -> drop stack
-    | "swap" -> swap stack
-    | "dup" -> dup stack
-    | "over" -> over stack
-    | "rot" -> rot stack
-    | "len" -> len stack
-    | "+" -> add stack
-    | "-" -> substract stack
-    | "*" -> multiply stack
-    | "i/" -> divide stack
-    | "%" -> modulo stack
-    | "=" -> equal stack
-    | ">" -> greater stack
-    | "<" -> less stack
-    | "not" -> not stack
-    | _ ->
-        if isInt exp then
-            push (int exp) stack
-        else
-            printerr exp
-            stack
+let rec skip = function
+    | [] | ["```"] -> []
+    | "```"::t -> t
+    | h::t -> skip t
 
-let define s heap =
-    s :: heap
+let lift t =
+    let rec recur n l r =
+        match r with
+        | [] | ["]"] -> (l |> List.rev, [])
+        | "]"::t when n = 0 -> (l |> List.rev, t)
+        | "["::t -> recur (n + 1) ("["::l) t
+        | "]"::t -> recur (n - 1) ("]"::l) t
+        | h::t -> recur n (h::l) t
+    recur 0 [] t
 
-let rec find s heap =
-    match heap with
-    | [] -> []
-    | head :: tail ->
-        if fst head = s then
-            snd head
-        else 
-            find s tail
+let rec parse = function
+    | [] -> Empty
+    | "```"::r -> parse (skip r)
+    | "["::lr ->
+        let l, r = lift lr
+        Stack (Quotation (parse l), parse r)
+    | w::r -> Stack (Operation w, parse r)
 
-let tokens (s:string) =
-    s.Split([|' '|]) |> Array.toList
+let replace (a : string) (b : string) (s : string) : string = s.Replace(a, b)
 
-let rec split delim n col exps =
-    match exps with
-    | [] -> (col |> List.rev, [])
-    | head :: tail ->
-        match head with
-        | "?" -> split delim (n + 1) (head :: col) tail
-        | d when d = delim ->
-            match n with
-            | 0 -> (col |> List.rev, tail)
-            | _ -> split delim (n - 1) (head :: col) tail
-        | _ -> split delim n (head :: col) tail
-            
-let cond tos exps =
-    let t = split ":" 0 [] exps
-    let f = split ";" 0 [] (snd t)
+let sugar p =
+    p
+    |> replace "\n" ""
+    |> replace "\n" ""
+    |> replace "." " . "
+    |> replace "[" " [ "
+    |> replace "]" " ] "
+    |> replace "```" " ``` "
 
-    match tos <> 0 with
-    | true -> (fst t) @ (snd f)
-    | false -> (fst f) @ (snd f)
+let lex p =
+    p
+    |> sugar
+    |> (fun s -> s.Split([|' '|]))
+    |> Array.toList
+    |> List.filter (function
+        | "" -> false
+        | _ -> true)
 
-let rec eval exps hs =
-    let heap = fst hs
-    let stack = snd hs
+let eval (p : string) (c : Context) : Context = apply (parse (lex p)) c
 
-    match exps with
-    | [] -> (heap, stack)
-    | head :: tail ->
-        match head with
-        | "//" -> (heap, stack)
-        | "#" ->
-            match tail with
-            | [] -> (heap, stack)
-            | name :: definition -> (define (name, definition) heap, stack)
-        | "?" ->
-            match stack with
-            | [] -> (heap, stack)
-            | tos :: rest -> eval (cond tos tail) (heap, rest)
-        | _ ->
-            match find head heap with
-            | [] -> eval tail (heap, exec head stack)
-            | def -> eval (def @ tail) hs
+let rec numeral = function
+    | Empty -> 0
+    | Stack (_, r) -> 1 + (numeral r)
 
-let evalPrint hs line =
-    let exps = tokens line
+let rec isnumeral = function
+    | Empty -> true
+    | Stack (Operation "I", r) -> isnumeral r
+    | _ -> false
 
-    hs
-    |> eval exps
+let unchurch h (n : Stack) =
+    let _, s = app (h, Stack (Quotation n, Stack (Quotation (Stack (Operation "I", Empty)), Empty)))
+    (isnumeral s, numeral s)
 
-let startHeapAndStack = (standard_library, [])
+let rec stringify = function
+    | (_, Empty) -> ""
+    | (h, Stack (e, Empty)) -> stre h e
+    | (h, Stack (e, r)) -> sprintf "%s %s" (stringify (h, r)) (stre h e)
+and stre (h : Heap) (se : StackElement) =
+    match se with
+    | Operation w -> w
+    | Quotation (Stack (Operation ".", Empty)) -> "true"
+    | Quotation ((Stack (Operation "swap", Stack (Operation ".", Empty)))) -> "false"
+    | Quotation q ->
+        match unchurch h q with
+        | (true, n) -> sprintf "%d" n
+        | _ -> sprintf "[%s]" (stringify (h, q))
+    | Exception e ->
+        match e with
+        | StackUnderflow -> "Exception: StackUnderflow"
+        | MissingQuotation -> "Exception: MissingQuotation"
+        | Failure s -> sprintf "Exception: %s" s
+
+let rec stringifyc = function
+    | (_, Empty) -> ""
+    | (h, Stack (e, Empty)) -> strec h e
+    | (h, Stack (e, r)) -> sprintf "%s %s" (stringifyc (h, r)) (strec h e)
+and strec (h : Heap) (se : StackElement) =
+    match se with
+    | Operation w -> w
+    | Quotation (Stack (Operation ".", Empty)) -> "true"
+    | Quotation ((Stack (Operation "swap", Stack (Operation ".", Empty)))) -> "false"
+    | Quotation q -> sprintf "[%s]" (stringifyc (h, q))
+    | Exception e ->
+        match e with
+        | StackUnderflow -> "Exception: StackUnderflow"
+        | MissingQuotation -> "Exception: MissingQuotation"
+        | Failure s -> sprintf "Exception: %s" s
